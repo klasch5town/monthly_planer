@@ -9,7 +9,7 @@
 # Licence:	 <your licence>
 # -------------------------------------------------------------------------------
 
-import sys, os, os.path, datetime, csv, logging
+import sys, os, os.path, datetime, csv, logging, argparse
 import ephem
 from pyHtml import c_HtmlFile
 from pyHtml import c_HtmlTag
@@ -333,11 +333,20 @@ def main():
     myKal.parseIcsFile(os.path.join(my_kal_year_folder, "ferien_bayern_{}.ics".format(my_kal_year)), pCategory="holiday", pDayOffset=-1)
     myKal.parseIcsFile(os.path.join(my_kal_year_folder, "feiertage_bayern_{}.ics".format(my_kal_year)), pCategory="holiday")
     myKal.parseIcsFile(os.path.join(my_kal_year_folder, "Abfuhrkalender-Fünfstetten-{}.ics".format(my_kal_year)), pCategory="garbage")
-    #myKal.parseBirthdayFile(os.path.join(".","Geburtstage.ics"))
-    myKal.parseBirthdayCsvFile(os.path.join(my_kal_common_folder, "myGeburtstage.csv"))
+    myKal.parseBirthdayCsvFile(os.path.join(my_kal_common_folder,"perso", "myGeburtstage.csv"))
     myKal.saveScheduleToHtml()
 
 
 if __name__ == '__main__':
-    #logging.basicConfig(level=logging.DEBUG)
+    parser = argparse.ArgumentParser(description='create a calendar')
+    parser.add_argument('--verbatim', action='store_true', default=False, help='show more information')
+    parser.add_argument('--debug', action='store_true', default=False, help='run in debug mode')
+
+    args = parser.parse_args()
+
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    if args.verbatim:
+        logging.basicConfig(level=logging.INFO)
+
     main()
