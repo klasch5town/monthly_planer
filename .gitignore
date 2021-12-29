@@ -1,0 +1,7 @@
+# files to ignore
+pyKal.py
+# folders to ignore
+build/
+.idea/
+__pycache__/
+perso/

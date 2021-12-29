@@ -1,0 +1,112 @@
+h1 {
+	text-align:     center;
+}
+
+div {
+	text-align:     center;
+	vertical-align: middle;
+}
+
+div.day {
+	display: table;
+   	width:   100%;
+   	height:   11mm;
+	border:  thin solid blue;
+	padding: 0;
+}
+
+div.week_day {
+	display: table-cell;
+	width: 7mm;
+	padding-left: 1mm;
+}
+
+div.saturday {
+	background-color: #FFFFC0;
+}
+
+div.sunday {
+	background-color: #FF7F50;
+}
+
+div.day_of_month {
+	display: table-cell;
+	width: 7mm;
+	padding-left: 2mm;
+	border-right: thin solid blue;
+}
+
+div.holiday {
+	background-color: #6495ED;
+}
+
+div.public_holiday {
+	background-color: #0000FF;
+}
+
+div.meta_info {
+	display: table-cell;
+	width: 10mm;
+	border-right: thin solid blue;
+	padding-left: 1mm;
+	text-align:   center;
+	font-size:    8pt;
+	text: #E6E6FA;
+}
+
+div.calendar_week {
+	display: table-cell;
+	width:  7mm;
+	border:  1;
+	margin:  0;
+	padding: 0;
+	text-align:   left;
+	font-size:    7pt;
+
+}
+
+div.birthday_block {
+	display: table-cell;
+	width:   40mm;
+}
+
+div.event_block {
+	display: table-cell;
+}
+
+div.event, div.birthday {
+	display: table-cell;
+	border:  1;
+	border-left-style: solid;
+	margin:  0;
+	padding: 3px;
+	text-align:   left;
+	font-size:    8pt;
+}
+
+div.garbage {
+	display:        table-cell;
+	width:          10mm;
+}
+
+div.RM {
+	background-color: #696969;
+	color: yellow;
+}
+
+div.PT {
+	background-color: #0000FF;
+	color: yellow;
+}
+
+div.GS {
+	background-color: #FFFF00;
+}
+
+div.SM {
+	background-color: #FF4500;
+}
+
+div.BT {
+	background-color: #11AA11;
+}
