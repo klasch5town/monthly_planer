@@ -16,6 +16,7 @@ from pyHtml import c_HtmlTag
 from pyHtml import CDivTag
 from pyICalendar import *
 from calendar import Calendar
+from shutil import copy
 from dateutil.easter import *
 from dateutil.relativedelta import *
 
@@ -323,18 +324,15 @@ def main():
 
     myKal = CCal('{}0101'.format(my_kal_year), '{}1231'.format(my_kal_year))
     myKal.printRange()
-    # myKal.printSchedule()
-    # myKal.addEvent()
     myKal.parseNameDayCsvFile(os.path.join(my_kal_common_folder, "Namenstage.csv"), my_kal_year)
-    #myKal.parse_event_csv_file(os.path.join(my_kal_year_folder, 'my_events.csv'))
-    #myKal.parseIcsFile(os.path.join(my_kal_year_folder,  "events.vcs"), pDayOffset=0)
     # import school holidays from previous year in order to get proper Christmas Holidays in January
-    myKal.parseIcsFile(os.path.join(my_kal_prev_year_folder, "ferien_bayern_{}.ics".format(my_kal_year-1)), pCategory="holiday")
+    myKal.parseIcsFile(os.path.join(my_kal_prev_year_folder, "ferien_bayern_{}.ics".format(my_kal_year-1)), pCategory="holiday", pDayOffset=-1)
     myKal.parseIcsFile(os.path.join(my_kal_year_folder, "ferien_bayern_{}.ics".format(my_kal_year)), pCategory="holiday", pDayOffset=-1)
     myKal.parseIcsFile(os.path.join(my_kal_year_folder, "feiertage_bayern_{}.ics".format(my_kal_year)), pCategory="holiday")
     myKal.parseIcsFile(os.path.join(my_kal_year_folder, "Abfuhrkalender-Fünfstetten-{}.ics".format(my_kal_year)), pCategory="garbage")
-    myKal.parseBirthdayCsvFile(os.path.join(my_kal_common_folder,"perso", "myGeburtstage.csv"))
+    myKal.parseBirthdayCsvFile(os.path.join(".","perso", "myGeburtstage.csv"))
     myKal.saveScheduleToHtml()
+    copy(os.path.join(my_kal_common_folder,'stylesheet.css'),my_kal_build_folder)
 
 
 if __name__ == '__main__':
