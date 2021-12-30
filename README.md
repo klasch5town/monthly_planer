@@ -50,21 +50,22 @@ The setup of the CSV-file is:
 #### Print it with browser
 * enable printing of background-colors/-images at the printing-dialog of your browser (e.g. Firefox: Print-Dialog => Options-Tab: Print Background)
 * disable printing header/footer
+
 => my Setup:
-* vom Browser (Firefox) in eine Datei drucken
-* Skalierung evtl. etwas unter 100% einstellen.
-* PDF in Okular öffnen
-* A3 und **Querformat** einstellen
+* print from browser (Firefox) in into file
+* month with 31 day may need scaling at 97%
+* open created PDF and adjust A3 und **landscape**
+* print it
 
 #### Print it with Pandoc
+Not much experience yet.
 * sudo apt-get install pandoc
 * sudo apt-get install texlive
 * sudo apt-get install lmodern
-* pandoc -c stylesheet.css -o kalender_2018.pdf *.html
+* example: pandoc -c stylesheet.css -o kalender_2018.pdf *.html
 
 ## TODO
 
-* support name-days
 * add graphical view of moon-phases (e.g. SVG)
 * add event-time to calendar-output
 
