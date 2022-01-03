@@ -1,0 +1,7 @@
+# files to ignore
+pyKal.uml
+# folders to ignore
+build/
+.idea/
+__pycache__/
+src/perso/
