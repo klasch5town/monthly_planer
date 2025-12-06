@@ -11,7 +11,6 @@
 import os.path
 import datetime
 import logging
-from dateutil.relativedelta import *
 
 class CiCalendar:
     def __init__(self, pFileName):
@@ -39,7 +38,7 @@ class CiCalendar:
             return
         self.dayOffset = pDayOffset
         for line in hFile:
-            if line[0] is '\n':
+            if line[0] == '\n':
                 continue
             self.__evaluate(line.rstrip('\n'))
 
@@ -67,7 +66,7 @@ class CiCalendar:
         return
 
     def __handleEnd(self):
-        if self.item is "VEVENT":
+        if self.item == "VEVENT":
             if self.eventList[-1].DateEnd is None:
                 self.eventList[-1].setDateEnd(self.eventList[-1].DateStart)
         self.item = None
@@ -79,17 +78,17 @@ class CiCalendar:
 
     def __handleEventStart(self):
         result = self.__scan4eventDate()
-        if len(result[0]) is not 8:
+        if len(result[0]) != 8:
             return
         self.eventList[-1].setDateStart(result[0])
         return
 
     def __handleEventEnd(self):
         result = self.__scan4eventDate()
-        if len(result[0]) is not 8:
+        if len(result[0]) != 8:
             return
         self.eventList[-1].setDateEnd(result[0])
-        if self.dayOffset is not 0:
+        if self.dayOffset != 0:
             self.eventList[-1].shiftEvent(self.dayOffset)
         return
 
@@ -116,7 +115,7 @@ class CiCalendar:
             if not event.DateStart is event.DateEnd:
                 outString += " - " + event.DateEnd
             outString += ": " + event.Summary
-            if not event.Categories is "":
+            if not event.Categories == "":
                 outString += " [" + event.Categories + "]"
             print(outString)
 
@@ -136,7 +135,11 @@ class CiEvent:
         return thisDate
 
     def __dateShift(self, pDate, pDayOffset, pMonthOffset, pYearOffset):
-        newDate =  pDate + relativedelta(years=pYearOffset, months=pMonthOffset, days=pDayOffset)
+        if pYearOffset > 0:
+            raise("Das habe ich nicht erwartet - fix it.")
+        if pMonthOffset > 0:
+            raise("Das habe ich nicht erwartet - fix it.")
+        newDate =  pDate + datetime.timedelta(days=pDayOffset)
         return newDate
 
 
@@ -165,8 +168,8 @@ class CiEvent:
 
 
     def getAgeString(self, pYear):
-        delta = relativedelta(datetime.date(pYear,12,31),self.DateStart)
-        returnString = " " + str(delta.years) + "J"
+        age = (datetime.date(pYear,12,31) - self.DateStart).days // 365
+        returnString = f"{age} J"
         if not self.status:
             returnString = returnString + " ??"
         return returnString

@@ -57,7 +57,7 @@ will add a question-mark if the birth-date is not marked as approved.
 => my Setup:
 * print from browser (Firefox) in into file
 * month with 31 day may need scaling at 97%
-* open created PDF and adjust A3 und **landscape**
+* open created PDF and adjust A3 and **portrait**
 * print it
 
 #### Print it with Pandoc

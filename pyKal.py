@@ -17,9 +17,34 @@ from pyHtml import CDivTag
 from pyICalendar import *
 from calendar import Calendar
 from shutil import copy
-from dateutil.easter import *
-from dateutil.relativedelta import *
 
+
+def westEaster(x):
+    """westEaster(int year): Calculates the date of Easter of West Church Year
+       Must not be older than 1538, when the Gregorian calendar went into effect.
+       Returns a date object.
+       Copied from: https://blog.ynfonatic.de/2023/01/28/calculating-the-date-of-easter-in-python.html"""
+
+    if not isinstance(x, int):
+        raise AssertionError("Year must be given as int")
+    if x < 1583:
+        raise ValueError("Year can't be older than 1583 (Gregorian)")
+
+    # t is a throwaway variable to make divmod happy
+
+    t,a = divmod(x, 19)
+    b,c = divmod(x, 100)
+    d,e = divmod(b, 4)
+    f,t = divmod(b+8, 25)
+    g,t = divmod(b-f+1, 3)
+    t,h = divmod(19*a+b-d-g+15, 30)
+    i,k = divmod(c, 4)
+    t,l = divmod(32+2*e+2*i-h-k, 7)
+    m,t = divmod(a+11*h+22*l, 451)
+    # p-1 is the day of easter sunday, n the month
+    n,p = divmod(h+l-7*m+114, 31)
+    p = p+1
+    return datetime.date(x, n, p)
 
 class CDay:
     def __init__(self, pWeekDayString, pDayOfMonth, pCalendarWeek):
@@ -64,45 +89,6 @@ class CCal:
                          "Mai", "Juni", "Juli", "August",
                          "September", "Oktober", "November", "Dezember")
     garbageType       = { "":"", "Restmüll":"RM", "Gelber":"GS", "Papiertonne":"PT", "Schadstoffmobil":"SM", "Biotonne":'BT'}
-    publicHolidays = [ # [datetime, summary, public-holiday]
-        [ "easter(self.startYear) + datetime.timedelta(days=-48)", "Rosenmontag",         False],
-        [ "easter(self.startYear) + datetime.timedelta(days=-47)", "Fastnacht",           False],
-        [ "easter(self.startYear) + datetime.timedelta(days=-46)", "Aschermittwoch",      False,
-        [ "easter(self.startYear) + datetime.timedelta(days= -7)", "Palmsonntag"],        True],
-        [ "easter(self.startYear) + datetime.timedelta(days= -3)", "Gründonnerstag",      False],
-        [ "easter(self.startYear) + datetime.timedelta(days= -2)", "Karfreitag",          True],
-        [ "easter(self.startYear) + datetime.timedelta(days= -1)", "Karsamstag",          False],
-        [ "easter(self.startYear)"                               , "Ostersonntag",        True],
-        [ "easter(self.startYear) + datetime.timedelta(days=  1)", "Ostermontag",         True],
-        [ "easter(self.startYear) + datetime.timedelta(days= 39)", "Christi Himmelfahrt", True],
-        [ "easter(self.startYear) + datetime.timedelta(days= 49)", "Pfingstsonntag",      True],
-        [ "easter(self.startYear) + datetime.timedelta(days= 50)", "Pfingstmontag",       True],
-        [ "easter(self.startYear) + datetime.timedelta(days= 60)", "Fronleichnam",        True],
-        [ "datetime.datetime(self.startYear, 1, 1)",               "Neujahr",             True],
-        [ "datetime.datetime(self.startYear,1, 6)",                "Hl. drei Könige",     True],
-        [ "datetime.datetime(self.startYear,2, 2)",                "Lichtmess",           False],   # 40 days after Christmas
-        [ "datetime.datetime(self.startYear,2,14)",                "Valentinstag",        False],
-        [ "datetime.datetime(self.startYear,5, 1)",                "Tag d. Arbeit",       True],
-        [ "datetime.datetime(self.startYear,8, 8)",                "Augsburger Friedensfest", False],
-        [ "datetime.datetime(self.startYear,8,15)",                "Mariä Himmelfahrt",   True],
-        [ "datetime.datetime(self.startYear,11, 1)",               "Allerheiligen",       True],
-        [ "datetime.datetime(self.startYear,11, 2)",               "Allerseelen",         False],
-        [ "datetime.datetime(self.startYear,11,11)",               "St. Martin",          False],
-        [ "datetime.datetime(self.startYear,12, 6)",               "Nikolaus",            False],
-        [ "datetime.datetime(self.startYear,12,24)",               "Hl. Abend",           False],
-        [ "datetime.datetime(self.startYear,12,25)",               "1. Weihnachtsfeiertag", True],
-        [ "datetime.datetime(self.startYear,12,26)",               "2. Weihnachtsfeiertag", True],
-        [ "datetime.datetime(self.startYear,12,31)",               "Silvester",           False],
-        [ "datetime.datetime(self.startYear,5,1)  +relativedelta(weekday=SU(+2))", "Muttertag",       False],
-       # [ "datetime.datetime(self.startYear,10,1) +relativedelta(weekday=SU(+1))", "Erntedank",       False],
-        [ "datetime.datetime(self.startYear,11,23)+relativedelta(weekday=WE(-1))", "Buß- und Bettag", False],
-        [ "datetime.datetime(self.startYear,12,25)+relativedelta(weekday=SU(-5))", "Totensonntag",    False],
-        [ "datetime.datetime(self.startYear,12,25)+relativedelta(weekday=SU(-4))", "1.Advent",        False],
-        [ "datetime.datetime(self.startYear,12,25)+relativedelta(weekday=SU(-3))", "2.Advent",        False],
-        [ "datetime.datetime(self.startYear,12,25)+relativedelta(weekday=SU(-2))", "3.Advent",        False],
-        [ "datetime.datetime(self.startYear,12,25)+relativedelta(weekday=SU(-1))", "4.Advent",        False],
-    ]
-
 
     def __init__(self,pStart,pEnd):
         if len(pStart) != 8 or len(pEnd) != 8:
@@ -113,6 +99,47 @@ class CCal:
         self.endYear    = int(pEnd[0:4])
         self.endMonth   = int(pEnd[4:6])
         self.endDay     = int(pEnd[6:8])
+        self.Weihnachtstag = datetime.datetime(self.startYear,12,25)
+        self.AdventsSonntag4 = self.Weihnachtstag + datetime.timedelta(days=-(self.Weihnachtstag.weekday()+1))
+        self.publicHolidays = [ 
+            [ westEaster(self.startYear) + datetime.timedelta(days=-48), "Rosenmontag",         False],
+            [ westEaster(self.startYear) + datetime.timedelta(days=-47), "Fastnacht",           False],
+            [ westEaster(self.startYear) + datetime.timedelta(days=-46), "Aschermittwoch",      False,
+            [ westEaster(self.startYear) + datetime.timedelta(days= -7), "Palmsonntag"],        True],
+            [ westEaster(self.startYear) + datetime.timedelta(days= -3), "Gründonnerstag",      False],
+            [ westEaster(self.startYear) + datetime.timedelta(days= -2), "Karfreitag",          True],
+            [ westEaster(self.startYear) + datetime.timedelta(days= -1), "Karsamstag",          False],
+            [ westEaster(self.startYear)                               , "Ostersonntag",        True],
+            [ westEaster(self.startYear) + datetime.timedelta(days=  1), "Ostermontag",         True],
+            [ westEaster(self.startYear) + datetime.timedelta(days= 39), "Christi himmelfahrt", True],
+            [ westEaster(self.startYear) + datetime.timedelta(days= 49), "Pfingstsonntag",      True],
+            [ westEaster(self.startYear) + datetime.timedelta(days= 50), "Pfingstmontag",       True],
+            [ westEaster(self.startYear) + datetime.timedelta(days= 60), "Fronleichnam",        True],
+            [ datetime.datetime(self.startYear, 1, 1),               "Neujahr",             True],
+            [ datetime.datetime(self.startYear,1, 6),                "Hl. drei Könige",     True],
+            [ datetime.datetime(self.startYear,2, 2),                "Lichtmess",           False],   # 40 days after Christmas
+            [ datetime.datetime(self.startYear,2,14),                "Valentinstag",        False],
+            [ datetime.datetime(self.startYear,5, 1),                "Tag d. Arbeit",       True],
+            [ datetime.datetime(self.startYear,8, 8),                "Augsburger Friedensfest", False],
+            [ datetime.datetime(self.startYear,8,15),                "Mariä Himmelfahrt",   True],
+            [ datetime.datetime(self.startYear,10,1)+datetime.timedelta(days=(6-datetime.datetime(2025,10,1).weekday())), "Erntedank",       False],
+            [ datetime.datetime(self.startYear,11, 1),               "Allerheiligen",       True],
+            [ datetime.datetime(self.startYear,11, 2),               "Allerseelen",         False],
+            [ datetime.datetime(self.startYear,11,11),               "St. Martin",          False],
+            [ self.AdventsSonntag4+datetime.timedelta(days=-32),     "Buß- und Bettag", False],
+            [ self.AdventsSonntag4+datetime.timedelta(days=-28),     "Totensonntag",    False],
+            [ self.AdventsSonntag4+datetime.timedelta(days=-21),     "1.Advent",        False],
+            [ datetime.datetime(self.startYear,12, 6),               "Nikolaus",            False],
+            [ self.AdventsSonntag4+datetime.timedelta(days=-14),     "2.Advent",        False],
+            [ self.AdventsSonntag4+datetime.timedelta(days=-7),     "3.Advent",        False],
+            [ self.AdventsSonntag4,                                "4.Advent",        False],
+            [ datetime.datetime(self.startYear,12,24),              "Hl. Abend",           False],
+            [ datetime.datetime(self.startYear,12,25),               "1. Weihnachtsfeiertag", True],
+            [ datetime.datetime(self.startYear,12,26),               "2. Weihnachtsfeiertag", True],
+            [ datetime.datetime(self.startYear,12,31),               "Silvester",           False],
+            [ datetime.datetime(self.startYear,5,1)+datetime.timedelta(days=(13-datetime.datetime(self.startYear,5,1).weekday())), "Muttertag",       False],
+        ]
+
         self.schedule = []
         for YearCount in range(self.startYear,self.endYear+1):
             for MonthCount in range(self.startMonth,self.endMonth+1):
@@ -133,7 +160,7 @@ class CCal:
     def __computePublicHolidays(self):
 
         for item in self.publicHolidays:
-            itemDate = eval(item[0])
+            itemDate = item[0]
             self.schedule[itemDate.month-1][itemDate.day-1].publicHoliday = item[2]
             thisEvent = CiEvent()
             thisEvent.setDateStart(itemDate.strftime("%Y%m%d"))
@@ -217,11 +244,19 @@ class CCal:
         self.schedule[pEvent.DateStart.month-1][pEvent.DateStart.day-1].addBirthday(pEvent)
         return
 
-    def getMoonPhaseStr(self, pYear, pMonth, pDay):
-        dateString = str(pYear) + '/' + str(pMonth) + '/' + str(pDay) + " 12:00:00"
-        moon = ephem.Moon(dateString)
-        moonPhase = round(moon.moon_phase, 3)
-        return str(moonPhase)
+    def getMoonPhaseFile(self, pYear, pMonth, pDay):
+        moonDay = datetime.datetime(pYear, pMonth, pDay)
+        lastMoonDay = moonDay + datetime.timedelta(days=-1)
+        
+        moon = ephem.Moon(moonDay.strftime("%Y/%m/%d"))
+        moonPhase = int(moon.moon_phase*15) + 1
+        moon = ephem.Moon(lastMoonDay.strftime("%Y/%m/%d"))
+        lastMoonPhase = int(moon.moon_phase*15) + 1
+        if moonPhase < lastMoonPhase:
+            moonPhase = 30 - moonPhase
+        if moonPhase > 30:
+            raise("unerwartet - fix it plz!")
+        return f"<img src=\"../../data/moon_phase_{moonPhase:02d}.svg\"/>"
 
 
     def printRange(self):
@@ -273,7 +308,7 @@ class CCal:
                     dayOfMonthTag.addClass("holiday")
                 dayTag.addSubTag(dayOfMonthTag)
 
-                metaInfoTag = CDivTag(self.getMoonPhaseStr(actual_year, (month_idx + 1), day_obj.DayOfMonth), "meta_info")
+                metaInfoTag = CDivTag(self.getMoonPhaseFile(actual_year, (month_idx + 1), day_obj.DayOfMonth), "meta_info")
                 dayTag.addSubTag(metaInfoTag)
 
                 calendarDayString = ""
@@ -311,7 +346,7 @@ class CCal:
 
 
 def main():
-    my_kal_year = 2022
+    my_kal_year = 2026
     my_kal_build_folder = os.path.join('.', 'build', '{}'.format(my_kal_year))
     logging.info('build-folder: '+my_kal_build_folder)
     my_kal_source_folder = os.path.join('.', 'src')

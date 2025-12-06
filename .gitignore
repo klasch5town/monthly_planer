@@ -5,3 +5,5 @@ build/
 .idea/
 __pycache__/
 perso/
+venv/
+.venv/
