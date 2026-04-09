@@ -1,5 +1,11 @@
 # pykal
 
+[![CI](https://github.com/klasch5town/monthly_planer/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/klasch5town/monthly_planer/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-%3E%3D3.11-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://docs.astral.sh/uv/)
+[![version](https://img.shields.io/badge/version-2.0.0-informational)](pyproject.toml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 Generates a personal monthly HTML calendar as a set of HTML files — one per month. Events, school holidays, public holidays, birthdays, name days, and garbage collection schedules can be fed in via ICS and CSV files.
 
 ## Project layout

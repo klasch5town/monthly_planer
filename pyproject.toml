@@ -2,6 +2,7 @@
 name = "pykal"
 version = "2.0.0"
 description = "Personal HTML calendar generator"
+license = { text = "MIT" }
 requires-python = ">=3.11"
 dependencies = [
     "ephem>=4.1",
