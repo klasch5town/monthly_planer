@@ -1,0 +1,21 @@
+# pykal configuration
+# All paths are relative to this file's location (project root).
+
+year: 2026
+
+paths:
+  data_dir: data
+  build_dir: build
+  perso_dir: perso      # personal data — gitignored, never committed
+
+sources:
+  # Relative to data/common/
+  name_days: Namenstage.csv
+
+  # Relative to data/<year>/ — {year} is replaced with the target year
+  school_holidays: "ferien_bayern_{year}.ics"
+  public_holidays: "feiertage_bayern_{year}.ics"
+  garbage_collection: "Abfuhrkalender-Fünfstetten-{year}.ics"
+
+  # Relative to perso/
+  birthdays: myGeburtstage.csv

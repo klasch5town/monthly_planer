@@ -1,84 +1,113 @@
-# README #
+# pykal
 
-## Summary
-This project is for generating a monthly calendar as html-file-set. Each month is represented by a single html-file.
-Events, holidays etc. can be added with the help of ics-/csv-files.
+Generates a personal monthly HTML calendar as a set of HTML files — one per month. Events, school holidays, public holidays, birthdays, name days, and garbage collection schedules can be fed in via ICS and CSV files.
 
-## How do I get set up? ###
+## Project layout
 
-The program is written for python3.
+```
+src/pykal/          Python package (cal, cli, html, icalendar modules)
+data/
+  common/           Static reference data (Namenstage.csv, stylesheet.css)
+  <year>/           Year-specific ICS files (not versioned, downloaded from internet)
+data/               Moon phase SVG images
+tests/              pytest test suite
+build/              Generated HTML output (not versioned)
+perso/              Personal data — birthdays, events (not versioned, never commit)
+doc/                Documentation and print setup screenshots
+pykal.yaml          Configuration file
+pyproject.toml      Package and dependency definition (managed with uv)
+```
 
-### Dependencies - add following modules
+## Requirements
 
-* https://pypi.python.org/pypi/ephem/ => sudo pip3 install ephem
-* https://dateutil.readthedocs.org/en/latest/# => sudo pip3 install python-dateutil
-* not yet: https://github.com/zulumarketing/html2pdf
+- Python >= 3.11
+- [uv](https://docs.astral.sh/uv/) for environment and package management
 
-### Configuration
+## Setup
 
-At the moment most configuration must be done in code.
+```bash
+uv sync
+```
 
-#### Holiday ical-file
+## Usage
 
-Holiday can be added as ical-file: 
-- http://www.schulferien.org/iCal/
-- https://www.ferienwiki.de/exports/de
+```bash
+uv run pykal                        # use year from pykal.yaml
+uv run pykal --year 2025            # override year
+uv run pykal --year 2026 --verbose  # with info logging
+uv run pykal --help                 # all options
+```
 
-#### public holidays
+The generated HTML files are written to `build/<year>/`.
 
-Currently there are just german public holidays supported - hardcoded.
+## Configuration
 
-#### adding Birthdays
+All configuration lives in `pykal.yaml`:
 
-Adding birthdays can be done with two file-types:
+```yaml
+year: 2026
 
-* ics/ical files
-* CSV-files
+paths:
+  data_dir: data      # root for ICS source files
+  build_dir: build    # HTML output destination
+  perso_dir: perso    # personal data (gitignored)
 
-The setup of the CSV-file is:
+sources:
+  name_days:         Namenstage.csv
+  school_holidays:   "ferien_bayern_{year}.ics"
+  public_holidays:   "feiertage_bayern_{year}.ics"
+  garbage_collection: "Abfuhrkalender-<municipality>-{year}.ics"
+  birthdays:         myGeburtstage.csv
+```
 
-* three columns separated by Tabulator
-* First column: the birthday-date as string "YYYY-MM-DD"
-* Second column: the Name of the Person having birthday
-* Third column: the date is approved (True) or not (False)
+### Obtaining ICS source files
 
-**Note:** The third column was introduced as the pyKal-application calculates the age for 
-all birth-dates and if you are sure of the day and month but not of the year it can happen 
-that you face someone with the wrong age. 
-That can lead to an embarrassing situation. In order to avoid such mistakes the pyKal-app 
-will add a question-mark if the birth-date is not marked as approved.
+- School holidays: https://www.schulferien.org/deutschland/ical/
+- Public holidays: https://www.ferienwiki.de/exports/de
+- Garbage collection: provided by your local waste disposal authority
 
-### How to get it printed
+Place the downloaded files in `data/<year>/`.
 
-#### Print it with browser
-* enable printing of background-colors/-images at the printing-dialog of your browser (e.g. Firefox: Print-Dialog => Options-Tab: Print Background)
-* disable printing header/footer
+### Birthday CSV format
 
-=> my Setup:
-* print from browser (Firefox) in into file
-* month with 31 day may need scaling at 97%
-* open created PDF and adjust A3 and **portrait**
-* print it
+File lives in `perso/` (not versioned). Three tab-separated columns:
 
-#### Print it with Pandoc
-Not much experience yet.
-* sudo apt-get install pandoc
-* sudo apt-get install texlive
-* sudo apt-get install lmodern
-* example: pandoc -c stylesheet.css -o kalender_2018.pdf *.html
+| Column | Content |
+|--------|---------|
+| 1 | Birthday date: `YYYY-MM-DD` |
+| 2 | Name |
+| 3 | Date confirmed: `True` / `False` |
 
-## TODO
+If the year is uncertain, use `False` — pykal will append `??` to the age so you are not caught quoting the wrong number.
 
-* add graphical view of moon-phases (e.g. SVG)
-* add event-time to calendar-output
+## Public holidays
 
-## Contribution guidelines ###
+Bavarian/Augsburg public holidays and notable days are calculated internally (no external ICS needed). Easter-dependent dates are computed for any year >= 1583.
 
-* Writing tests
-* Code review
-* Other guidelines
+## Printing
 
-## Who do I talk to? ###
+### From browser (recommended)
 
-* Repo owner or admin
-* Other community or team contact
+- Enable "Print Background Colors and Images" in your browser's print dialog
+- Disable header/footer
+- Firefox → print to file → open PDF → set A3 portrait
+- Months with 31 days may need scaling to ~97%
+
+### With Pandoc / LaTeX
+
+A `template.latex` is provided in `data/common/` for Pandoc-based PDF generation. This does currently not work properly, but may be improved in future.
+
+```bash
+sudo apt-get install pandoc texlive lmodern
+cd build/<year> && pandoc -c stylesheet.css -o ../../kalender_<year>.pdf *.html
+```
+
+## Development
+
+Run the test suite:
+
+```bash
+uv run pytest
+```
+
+Tests cover Easter calculation, public holiday generation, ICS parsing, and CSV import. The CI pipeline runs on every push via GitHub Actions (`.github/workflows/ci.yml`).
