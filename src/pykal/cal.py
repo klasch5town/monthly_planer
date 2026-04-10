@@ -9,8 +9,8 @@ from shutil import copy
 from typing import NamedTuple
 
 import ephem
+import jinja2
 
-from pykal.html import DivTag, HtmlFile, HtmlTag, RawDivTag
 from pykal.icalendar import ICalEvent, ICalendar
 
 
@@ -279,66 +279,40 @@ class PyKal:
         year_build_dir.mkdir(parents=True, exist_ok=True)
 
         # Copy moon phase SVGs so the build folder is self-contained
-        # (required for pandoc PDF generation and browser use without a server)
         for svg in data_common_dir.parent.glob("moon_phase_*.svg"):
             copy(svg, year_build_dir)
+
+        template_dir = Path(__file__).parent / "templates"
+        env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(str(template_dir)),
+            autoescape=True,
+        )
+        template = env.get_template("calendar_month.html")
 
         for month_idx, month_days in enumerate(self.schedule):
             month_name = _MONTH_NAMES[month_idx]
             title = f"{month_name}_{self.year}"
-            html_file = HtmlFile(title, year_build_dir)
-            html_file.add_tag(HtmlTag("h1", title))
 
+            days = []
             for day in month_days:
-                day_tag = DivTag(css_class="day")
-
-                # Weekday label
-                weekday_class = "week_day"
-                if day.weekday == 6:
-                    day_tag.add_class("saturday")
-                elif day.weekday == 7:
-                    day_tag.add_class("sunday")
-                if day.is_public_holiday:
-                    weekday_class += " public_holiday"
-                day_tag.add_sub_tag(DivTag(day.weekday_string or "", weekday_class))
-
-                # Day-of-month number
-                dom_class = "day_of_month"
-                if day.is_holiday:
-                    dom_class += " holiday"
-                day_tag.add_sub_tag(DivTag(str(day.day_of_month), dom_class))
-
-                # Moon phase image (raw HTML, not escaped)
-                moon_html = self._moon_phase_img(month_idx + 1, day.day_of_month)
-                day_tag.add_sub_tag(RawDivTag(moon_html, "meta_info"))
-
-                # Calendar week (shown on Mondays only)
-                kw_text = f"KW{day.calendar_week}" if day.weekday == 1 else ""
-                day_tag.add_sub_tag(DivTag(kw_text, "calendar_week"))
-
-                # Birthdays
-                birthday_block = DivTag(css_class="birthday_block")
-                for event in day.birthdays:
-                    summary = event.summary + event.get_age_string(self.year)
-                    birthday_block.add_sub_tag(DivTag(summary, "birthday"))
-                day_tag.add_sub_tag(birthday_block)
-
-                # Events
-                event_block = DivTag(css_class="event_block")
-                for event in day.events:
-                    event_block.add_sub_tag(DivTag(event.summary, "event"))
-                day_tag.add_sub_tag(event_block)
-
-                # Garbage collection
                 abbrev = _GARBAGE_ABBREV.get(day.garbage_collection, "")
-                garbage_class = "garbage"
-                if abbrev:
-                    garbage_class += " " + abbrev
-                day_tag.add_sub_tag(DivTag(abbrev, garbage_class))
+                days.append({
+                    "is_saturday": day.weekday == 6,
+                    "is_sunday": day.weekday == 7,
+                    "is_public_holiday": day.is_public_holiday,
+                    "is_holiday": day.is_holiday,
+                    "weekday_string": day.weekday_string or "",
+                    "day_of_month": day.day_of_month,
+                    "moon_img": self._moon_phase_img(month_idx + 1, day.day_of_month),
+                    "calendar_week_text": f"KW{day.calendar_week}" if day.weekday == 1 else "",
+                    "birthdays": [e.summary + e.get_age_string(self.year) for e in day.birthdays],
+                    "events": [e.summary for e in day.events],
+                    "garbage_text": abbrev,
+                    "garbage_class": abbrev,
+                })
 
-                html_file.add_tag(day_tag)
-
-            html_file.save()
+            html = template.render(title=title, days=days)
+            (year_build_dir / f"{title}.html").write_text(html, encoding="utf-8")
 
         copy(data_common_dir / "stylesheet.css", year_build_dir)
         logging.info("saved HTML calendar to %s", year_build_dir)

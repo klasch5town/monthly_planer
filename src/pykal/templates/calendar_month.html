@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="stylesheet.css" media="all">
+  <title>{{ title }}</title>
+</head>
+<body>
+<h1>{{ title }}</h1>
+{% for day in days %}
+<div class="day{% if day.is_saturday %} saturday{% elif day.is_sunday %} sunday{% endif %}">
+  <div class="week_day{% if day.is_public_holiday %} public_holiday{% endif %}">{{ day.weekday_string }}</div>
+  <div class="day_of_month{% if day.is_holiday %} holiday{% endif %}">{{ day.day_of_month }}</div>
+  <div class="meta_info">{{ day.moon_img | safe }}</div>
+  <div class="calendar_week">{{ day.calendar_week_text }}</div>
+  <div class="birthday_block">
+    {% for b in day.birthdays %}<div class="birthday">{{ b }}</div>{% endfor %}
+  </div>
+  <div class="event_block">
+    {% for e in day.events %}<div class="event">{{ e }}</div>{% endfor %}
+  </div>
+  <div class="garbage{% if day.garbage_class %} {{ day.garbage_class }}{% endif %}">{{ day.garbage_text }}</div>
+</div>
+{% endfor %}
+</body>
+</html>
