@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %} — Settings{% endblock %}
+{% block content %}
+<h1>Settings</h1>
+<p class="hint">Note: saving will reformat <code>pykal.yaml</code> and remove comments.</p>
+
+<form method="post">
+  <section>
+    <h2>General</h2>
+    <div class="form-group">
+      <label>Year</label>
+      <input type="number" name="year" value="{{ cfg.year }}" min="2000" max="2100" required>
+    </div>
+  </section>
+
+  <section>
+    <h2>Paths</h2>
+    <div class="form-group">
+      <label>Data directory</label>
+      <input type="text" name="data_dir" value="{{ cfg.paths.data_dir }}">
+    </div>
+    <div class="form-group">
+      <label>Build directory</label>
+      <input type="text" name="build_dir" value="{{ cfg.paths.build_dir }}">
+    </div>
+    <div class="form-group">
+      <label>Personal data directory</label>
+      <input type="text" name="perso_dir" value="{{ cfg.paths.perso_dir }}">
+    </div>
+  </section>
+
+  <section>
+    <h2>Source Files</h2>
+    {% for key, value in cfg.sources.items() %}
+    <div class="form-group">
+      <label>{{ key }}</label>
+      <input type="text" name="{{ key }}" value="{{ value }}">
+    </div>
+    {% endfor %}
+  </section>
+
+  <section>
+    <h2>Calendar Colors</h2>
+    {% for cls, label in color_classes %}
+    <div class="form-group form-color">
+      <label>{{ label }}</label>
+      <input type="color" name="color_{{ cls }}" value="{{ colors.get(cls, '#ffffff') }}">
+      <span class="color-preview" style="background:{{ colors.get(cls, '#ffffff') }}"></span>
+      <span class="color-value">{{ colors.get(cls, '') }}</span>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section>
+    <button type="submit" class="btn btn-primary">Save Settings</button>
+  </section>
+</form>
+{% endblock %}

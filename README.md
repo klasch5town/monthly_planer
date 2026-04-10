@@ -8,10 +8,34 @@
 
 Generates a personal monthly HTML calendar as a set of HTML files — one per month. Events, school holidays, public holidays, birthdays, name days, and garbage collection schedules can be fed in via ICS and CSV files.
 
+## Web Interface
+
+pykal includes a browser-based GUI for managing configuration, events, birthdays, and triggering calendar generation.
+
+[![pykal GUI](doc/pyKal-GUI_thumbnail.png)](doc/pyKal-GUI.png)
+
+Start the web interface with:
+
+```bash
+uv run pykal-web              # http://127.0.0.1:5000
+uv run pykal-web --debug      # with auto-reload
+uv run pykal-web --port 8080  # custom port
+```
+
+The GUI provides four pages:
+
+| Page | Description |
+|------|-------------|
+| **Dashboard** | Overview of loaded data, generate calendar |
+| **Events** | Browse all events; add/delete custom events |
+| **Birthdays** | View, add, edit, and delete birthdays |
+| **Settings** | Edit year, paths, source files, and calendar colors |
+
 ## Project layout
 
 ```
-src/pykal/          Python package (cal, cli, html, icalendar modules)
+src/pykal/          Python package (cal, cli, html, icalendar, generate modules)
+src/pykal/web/      Flask web interface (routes, templates, static assets)
 data/
   common/           Static reference data (Namenstage.csv, stylesheet.css)
   <year>/           Year-specific ICS files (not versioned, downloaded from internet)
@@ -19,7 +43,7 @@ data/               Moon phase SVG images
 tests/              pytest test suite
 build/              Generated HTML output (not versioned)
 perso/              Personal data — birthdays, events (not versioned, never commit)
-doc/                Documentation and print setup screenshots
+doc/                Documentation, screenshots, and planning files
 pykal.yaml          Configuration file
 pyproject.toml      Package and dependency definition (managed with uv)
 ```
@@ -35,7 +59,7 @@ pyproject.toml      Package and dependency definition (managed with uv)
 uv sync
 ```
 
-## Usage
+## Command line usage
 
 ```bash
 uv run pykal                        # use year from pykal.yaml

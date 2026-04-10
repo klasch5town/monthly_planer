@@ -8,10 +8,12 @@ dependencies = [
     "ephem>=4.1",
     "click>=8.1",
     "pyyaml>=6.0",
+    "flask>=3.0",
 ]
 
 [project.scripts]
 pykal = "pykal.cli:main"
+pykal-web = "pykal.web.app:serve"
 
 [build-system]
 requires = ["hatchling"]

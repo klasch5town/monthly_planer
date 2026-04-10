@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %} — Dashboard{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+
+{% if load_error %}
+<div class="flash flash-error">Could not load calendar data: {{ load_error }}</div>
+{% endif %}
+
+<section>
+  <h2>Current Configuration</h2>
+  <table>
+    <tr><th>Year</th><td>{{ year }}</td></tr>
+    <tr><th>Events loaded</th><td>{{ event_count }}</td></tr>
+    <tr><th>Birthdays loaded</th><td>{{ birthday_count }}</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Generate Calendar</h2>
+  <form method="post" action="{{ url_for('main.generate') }}">
+    <button type="submit" class="btn btn-primary">Generate {{ year }}</button>
+  </form>
+  <p class="hint">Output will be written to <code>{{ build_dir }}</code>.</p>
+</section>
+
+<section>
+  <h2>Data Sources</h2>
+  <table>
+    {% for key, value in sources.items() %}
+    <tr><th>{{ key }}</th><td>{{ value }}</td></tr>
+    {% endfor %}
+  </table>
+</section>
+{% endblock %}

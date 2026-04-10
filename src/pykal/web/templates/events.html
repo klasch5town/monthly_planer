@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %} — Events{% endblock %}
+{% block content %}
+<h1>Events {{ year }}</h1>
+
+<section>
+  <h2>All Events (read-only)</h2>
+  {% if all_events %}
+  <table>
+    <thead><tr><th>Date</th><th>Summary</th></tr></thead>
+    <tbody>
+      {% for e in all_events %}
+      <tr><td>{{ e.date }}</td><td>{{ e.summary }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No events loaded.</p>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Custom Events</h2>
+  {% if custom_events %}
+  <table>
+    <thead><tr><th>Date</th><th>Summary</th><th></th></tr></thead>
+    <tbody>
+      {% for e in custom_events %}
+      <tr>
+        <td>{{ e.date }}</td>
+        <td>{{ e.summary }}</td>
+        <td>
+          <form method="post" action="{{ url_for('main.events_delete', idx=loop.index0) }}">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No custom events yet.</p>
+  {% endif %}
+
+  <h3>Add Custom Event</h3>
+  <form method="post" action="{{ url_for('main.events_add') }}" class="form-row">
+    <label>Date<input type="date" name="date" required></label>
+    <label>Summary<input type="text" name="summary" required placeholder="Event title"></label>
+    <button type="submit" class="btn btn-primary">Add</button>
+  </form>
+</section>
+{% endblock %}

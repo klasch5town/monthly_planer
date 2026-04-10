@@ -1,0 +1,271 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+  background: #f0f2f5;
+  color: #333;
+}
+
+/* ── Navigation ── */
+
+nav {
+  background: #2c3e50;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.brand {
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-right: auto;
+  letter-spacing: 0.05em;
+}
+
+nav a {
+  color: #adb5bd;
+  text-decoration: none;
+  padding: 0.25rem 0;
+  border-bottom: 2px solid transparent;
+}
+
+nav a:hover,
+nav a.active {
+  color: #fff;
+  border-bottom-color: #3498db;
+}
+
+/* ── Main content ── */
+
+main {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+h1 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+h2 {
+  color: #34495e;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.4rem;
+  margin-top: 0;
+}
+
+h3 {
+  color: #34495e;
+  margin-bottom: 0.5rem;
+}
+
+section {
+  background: #fff;
+  border-radius: 5px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Flash messages ── */
+
+.flash {
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.flash-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.flash-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* ── Tables ── */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #555;
+}
+
+tbody tr:hover {
+  background: #f8f9fa;
+}
+
+td.actions {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+/* ── Buttons ── */
+
+.btn {
+  display: inline-block;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: #333;
+  line-height: 1.4;
+}
+
+.btn:hover {
+  background: #f0f0f0;
+}
+
+.btn-primary {
+  background: #3498db;
+  color: #fff;
+  border-color: #2980b9;
+}
+
+.btn-primary:hover {
+  background: #2980b9;
+}
+
+.btn-danger {
+  background: #e74c3c;
+  color: #fff;
+  border-color: #c0392b;
+}
+
+.btn-danger:hover {
+  background: #c0392b;
+}
+
+.btn-sm {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+/* ── Forms ── */
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #444;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="date"] {
+  width: 100%;
+  max-width: 420px;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 0.95rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.form-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-weight: 600;
+  color: #444;
+  font-size: 0.9rem;
+}
+
+.form-row input[type="text"],
+.form-row input[type="date"] {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 0.95rem;
+}
+
+.label-checkbox {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: normal !important;
+  cursor: pointer;
+}
+
+/* ── Color settings ── */
+
+.form-color {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.form-color label {
+  min-width: 220px;
+  margin-bottom: 0;
+  font-weight: normal;
+}
+
+.color-preview {
+  display: inline-block;
+  width: 2rem;
+  height: 1.4rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  vertical-align: middle;
+}
+
+.color-value {
+  font-family: monospace;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+/* ── Misc ── */
+
+.hint {
+  color: #888;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+code {
+  background: #f4f4f4;
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+form {
+  margin: 0;
+}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %} — Edit Birthday{% endblock %}
+{% block content %}
+<h1>Edit Birthday</h1>
+
+<section>
+  <form method="post">
+    <div class="form-group">
+      <label>Date</label>
+      <input type="date" name="date" value="{{ row.date }}" required>
+    </div>
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" name="name" value="{{ row.name }}" required>
+    </div>
+    <div class="form-group">
+      <label class="label-checkbox">
+        <input type="checkbox" name="confirmed" {% if row.confirmed %}checked{% endif %}>
+        Year confirmed
+      </label>
+    </div>
+    <div class="form-row">
+      <button type="submit" class="btn btn-primary">Save</button>
+      <a href="{{ url_for('main.birthdays') }}" class="btn">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
