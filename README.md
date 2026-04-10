@@ -141,3 +141,7 @@ uv run pytest
 ```
 
 Tests cover Easter calculation, public holiday generation, ICS parsing, and CSV import. The CI pipeline runs on every push via GitHub Actions (`.github/workflows/ci.yml`).
+
+## Revision History
+
+See [CHANGES.md](CHANGES.md).
